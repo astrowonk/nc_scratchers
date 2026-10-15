@@ -4,3 +4,4 @@ game_link_info.json
 config.py
 .ipynb_checkpoints/scratch NC-checkpoint.ipynb
 scratch NC.ipynb
+*.log
