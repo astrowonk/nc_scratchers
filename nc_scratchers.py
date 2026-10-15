@@ -200,12 +200,12 @@ class NCScratcherData:
     ) -> GT | pl.DataFrame:
         if cost == 0:
             out = pl.read_database(
-                query='select * from summary where scrape_time =  (SELECT MAX(scrape_time) FROM summary) order by current_expectation_value desc  limit 25 ',
+                query='select s.*,fraction_unclaimed as fraction_unsold from summary s left join fraction_remaining fr on fr.scrape_time = s.scrape_time and fr.game_number=s.game_number where s.scrape_time =  (SELECT MAX(scrape_time) FROM summary) order by current_expectation_value desc  limit 25 ',
                 connection=self.con,
             )
         else:
             out = pl.read_database(
-                query='select * from summary  where cost = :cost and scrape_time =  (SELECT MAX(scrape_time) FROM summary) order by current_expectation_value desc limit 25 ',
+                query='select s.*,fraction_unclaimed as fraction_unsold from summary  s left join fraction_remaining fr on fr.scrape_time = s.scrape_time and fr.game_number=s.game_number where cost = :cost and s.scrape_time =  (SELECT MAX(scrape_time) FROM summary) order by current_expectation_value desc limit 25 ',
                 execute_options={'parameters': {'cost': cost}},
                 connection=self.con,
             )
