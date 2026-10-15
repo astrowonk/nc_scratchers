@@ -180,13 +180,20 @@ class NCScratcherData:
         )
         return df
 
+    def get_all_detail(self):
+        df = pl.read_database(
+            query='select d.*,cost from details d left join (select game_number, max(cost) cost  from summary group by game_number) s on s.game_number = d.game_number ',
+            connection=self.con,
+        )
+        return df
+
     def get_game_detail_trend(self, game_id):
         df = pl.read_database(
             query='select * from details where game_number = :game_id order by scrape_time',
             execute_options={'parameters': {'game_id': game_id}},
             connection=self.con,
         )
-        return df
+        return df.with_columns(pl.col('scrape_time').str.to_datetime())
 
     def get_best_games(
         self, cost: int = 0, return_dataframe: bool = False
