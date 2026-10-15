@@ -14,7 +14,7 @@ app = Dash(
     external_stylesheets=[dbc.themes.YETI, dbc.icons.BOOTSTRAP],
 )
 
-about = open('about.md', 'r').read()
+about = open('about_nc.md', 'r').read()
 
 tabs = dbc.Tabs(
     [
