@@ -19,3 +19,52 @@ FROM (
 WHERE expectation_score = 1
   AND value = min_value
 ORDER BY fraction_unclaimed DESC;
+
+drop view if exists latest_top_prizes;
+
+create view latest_top_prizes as
+WITH latest AS (
+    SELECT *
+    FROM details
+    WHERE scrape_time = (
+        SELECT MAX(scrape_time)
+        FROM details
+    )
+),
+ranked AS (
+    SELECT *,
+           RANK() OVER (
+               PARTITION BY game_number
+               ORDER BY value DESC
+           ) AS rnk
+    FROM latest
+)
+SELECT
+    game_number,
+    SUM(winners_remaining) AS top_prizes_left
+FROM ranked
+WHERE rnk = 1
+GROUP BY game_number;
+
+drop view if exists summary_view;
+create view summary_view as 
+
+select
+	s.*,
+	fraction_unclaimed as fraction_unsold,
+	tp.top_prizes_left as top_prizes_remaining
+from
+	summary s
+left join fraction_remaining fr on
+	fr.scrape_time = s.scrape_time
+	and fr.game_number = s.game_number
+left join latest_top_prizes tp on 
+	tp.game_number = s.game_number
+where
+	s.scrape_time = (
+	SELECT
+		MAX(scrape_time)
+	FROM
+		summary)
+order by
+	current_expectation_value desc;

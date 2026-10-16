@@ -17,13 +17,21 @@ parent_dir = Path().absolute().stem
 dash.register_page(__name__, path='/')
 
 
+def make_label(i):
+    if i:
+        return f'${i} tickets'
+    return 'All Ticket Costs'
+
+
 menu_div = html.Div([
     html.H1('NC Scratcher Explorer', style={'text-align': 'center'}),
     dbc.InputGroup([
-        dbc.InputGroupText('Cost of Ticket ($0 for all)'),
+        dbc.InputGroupText('Cost Filter:'),
         dbc.Select(
             id='cost-menu',
-            options=[{'label': f'${n}', 'value': n} for n in [0, 1, 2, 3, 5, 10, 20, 30, 50]],
+            options=[
+                {'label': make_label(n), 'value': n} for n in [0, 1, 2, 3, 5, 10, 20, 30, 50]
+            ],
             value=10,
             persistence=True,
             persistence_type='local',
