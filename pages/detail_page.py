@@ -40,7 +40,9 @@ def layout(game_id=None, **other_unknown_query_strings):
                 f"""### Details for [{game_title}](https://nclottery.com/{game_link}); ID = {game_id}"""
             ),
             dbc.Table.from_enhanced_dataframe(
-                df.to_pandas()[
+                df.with_columns(
+                    pl.col(['current_expectation_value', 'fraction_unclaimed']).round(2)
+                ).to_pandas()[
                     [
                         'value',
                         'winners_at_start',
@@ -48,6 +50,7 @@ def layout(game_id=None, **other_unknown_query_strings):
                         'fraction_unclaimed',
                         'expectation_score',
                         'new_odds',
+                        'current_expectation_value',
                         'odds_at_start_computed',
                     ]
                 ],
