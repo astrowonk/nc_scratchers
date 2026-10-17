@@ -51,7 +51,7 @@ create view summary_view as
 
 select
 	s.*,
-	fraction_unclaimed
+	fraction_unclaimed,
 	tp.top_prizes_left as top_prizes_remaining
 from
 	summary s
