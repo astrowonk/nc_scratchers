@@ -72,6 +72,15 @@ def summary(value):
         )
     )
     scrape_time = out['scrape_time'].item(0)
+    mapper_call_dict = {
+        col: lambda x: f'${x:.2f}'
+        for col in [
+            'top_prize_expectation_value',
+            'original_expectation_value',
+            'current_expectation_value',
+        ]
+    }
+    mapper_call_dict.update({'fraction_unclaimed': lambda x: f'{x:.1%}'})
     return html.Div([
         dbc.Table.from_enhanced_dataframe(
             out
@@ -79,7 +88,8 @@ def summary(value):
             .drop(['scrape_time'])
             .to_pandas(),
             striped=True,
-            # style={'width': '80%'},
+            callable_column_map=mapper_call_dict,
+            # style={'width': '80%'}
         ),
         dcc.Markdown(f'Data last scraped on {scrape_time}'),
     ])
