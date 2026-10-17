@@ -41,18 +41,22 @@ ranked AS (
 )
 SELECT
     game_number,
-    SUM(winners_remaining) AS top_prizes_left
+    SUM(winners_remaining) AS top_prizes_left,
+    MAX(current_expectation_value) AS top_prize_expectation_value
 FROM ranked
 WHERE rnk = 1
 GROUP BY game_number;
 
 drop view if exists summary_view;
+
+
 create view summary_view as 
 
 select
 	s.*,
 	fraction_unclaimed,
-	tp.top_prizes_left as top_prizes_remaining
+	tp.top_prizes_left as top_prizes_remaining,
+    tp.top_prize_expectation_value 
 from
 	summary s
 left join fraction_remaining fr on
